@@ -4,7 +4,7 @@ import plotly.express as px
 
 st.set_page_config(page_title="Analisi Inflazione - Tesi", layout="wide")
 
-st.title("📊 Analisi dell'Inflazione: Italia, Sicilia e Lombardia")
+st.title("📊 Analisi dell'Inflazione: Italia, Sicilia, Lombardia,Eurozona, Venezuela")
 st.write("Progetto di Tesi – Confronto interattivo dei dati regionali e nazionali.")
 
 # Caricamento file Excel o CSV
@@ -23,7 +23,7 @@ if uploaded_file is not None:
     # Identifica automaticamente la colonna dell'anno (cerca parole come 'anno' o 'year')
     col_anno = next((c for c in colonne if 'anno' in c.lower() or 'year' in c.lower()), colonne[0])
     
-    # Le altre colonne sono le regioni/paesi (es. Italia, Sicilia, Lombardia)
+    # Le altre colonne sono le regioni/paesi (es. Italia, Sicilia, Lombardia, Eurozona, Venezuela)
     regioni_disponibili = [c for c in colonne if c != col_anno]
     
     # Filtro nella sidebar per scegliere quali regioni visualizzare nel grafico
@@ -53,4 +53,4 @@ if uploaded_file is not None:
     with st.expander("Mostra dati in formato tabella"):
         st.dataframe(df)
 else:
-    st.info("Carica il file Excel con i dati di Italia, Sicilia e Lombardia per iniziare.")
+    st.info("Carica il file Excel con i dati di Italia, Sicilia, Lombardia, Eurozona, Venezuela per iniziare.")
