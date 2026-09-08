@@ -4,42 +4,39 @@ import plotly.express as px
 
 st.set_page_config(page_title="Analisi Inflazione - Tesi", layout="wide")
 
-st.title("📊 Analisi dell'Inflazione: Italia, Sicilia, Lombardia,Eurozona, Venezuela")
-st.write("Progetto di Tesi – Confronto interattivo dei dati regionali e nazionali.")
+st.title("📊 Analisi dell'Inflazione: Italia, Sicilia, Lombardia, Eurozona e Venezuela")
+st.write("Progetto di Tesi – Confronto interattivo dei dati regionali e internazionali.")
 
-# Caricamento file Excel o CSV
-uploaded_file = st.file_uploader("Carica il tuo file Excel", type=["xlsx", "csv"])
+# Nome del file caricato su GitHub
+NOME_FILE = "inflazione-2.csv"  # Modificalo se il tuo file ha un altro nome
 
-if uploaded_file is not None:
-    if uploaded_file.name.endswith('.csv'):
-        df = pd.read_csv(uploaded_file)
+@st.cache_data
+def carica_dati(filename):
+    if filename.endswith('.csv'):
+        return pd.read_csv(filename)
     else:
-        df = pd.read_excel(uploaded_file)
-        
+        return pd.read_excel(filename)
+
+try:
+    df = carica_dati(NOME_FILE)
+    
     st.sidebar.header("Opzioni e Filtri")
     
     colonne = df.columns.tolist()
-    
-    # Identifica automaticamente la colonna dell'anno (cerca parole come 'anno' o 'year')
     col_anno = next((c for c in colonne if 'anno' in c.lower() or 'year' in c.lower()), colonne[0])
-    
-    # Le altre colonne sono le regioni/paesi (es. Italia, Sicilia, Lombardia, Eurozona, Venezuela)
     regioni_disponibili = [c for c in colonne if c != col_anno]
     
-    # Filtro nella sidebar per scegliere quali regioni visualizzare nel grafico
     regioni_selezionate = st.sidebar.multiselect(
-        "Seleziona Aree / Regioni da confrontare:", 
+        "Seleziona Aree / Paesi da confrontare:", 
         regioni_disponibili, 
         default=regioni_disponibili
     )
     
-    usa_log = st.sidebar.checkbox("Usa scala logaritmica")
+    usa_log = st.sidebar.checkbox("Usa scala logaritmica (consigliato in presenza di valori molto alti come il Venezuela)")
 
-    # Generazione del grafico con le tue colonne reali
     st.subheader("Tasso di Inflazione per Area")
     
     if regioni_selezionate:
-        # Plotly traccia automaticamente ogni colonna selezionata come una linea distinta
         fig = px.line(df, x=col_anno, y=regioni_selezionate, markers=True, title="Confronto Tassi")
         fig.update_layout(xaxis_title="Anno", yaxis_title="Valore (%)")
         
@@ -48,9 +45,10 @@ if uploaded_file is not None:
             
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.warning("Seleziona almeno una regione dalla barra laterale.")
+        st.warning("Seleziona almeno un'area dalla barra laterale.")
 
     with st.expander("Mostra dati in formato tabella"):
         st.dataframe(df)
-else:
-    st.info("Carica il file Excel con i dati di Italia, Sicilia, Lombardia, Eurozona, Venezuela per iniziare.")
+
+except Exception as e:
+    st.error(f"Errore nel caricamento del file: {e}. Assicurati che il file '{NOME_FILE}' si trovi nel repository di GitHub.")
